@@ -110,6 +110,24 @@
         .brief-compact * {
             margin-bottom: 0.15rem;
         }
+
+        /* Custom scrollbar for world news */
+        #world-news::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        #world-news::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+
+        #world-news::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+
+        #world-news::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
     </style>
 </head>
 
@@ -193,7 +211,7 @@
         <!-- World Market Events -->
         <section class="card p-6">
             <h3 class="text-lg font-bold mb-6 text-slate-800 border-b border-slate-100 pb-3">World Market Events</h3>
-            <div id="world-news" class="space-y-4"></div>
+            <div id="world-news" class="space-y-4 pr-2 overflow-y-auto max-h-[600px]"></div>
         </section>
 
         <!-- Dynamic Charts -->
@@ -453,7 +471,7 @@
 
             const now = new Date();
             const cutoff = new Date(now);
-            cutoff.setDate(cutoff.getDate() - 14);
+            cutoff.setDate(cutoff.getDate() - 2);
             const recentEvents = (rawData.events || [])
                 .filter(row => {
                     const d = new Date(row.date || row.Date);
@@ -610,9 +628,9 @@
                 };
 
                 const scoreFields = [
-                    { key: 'vol_score', label: 'Vol (biến động tỷ giá)' },
-                    { key: 'ir_score', label: 'IR (lãi suất thấp hơn USA)' },
-                    { key: 'inf_score', label: 'INF (lạm phát cao hơn USA)' },
+                    { key: 'vol_score', label: 'Vol (mức biến động tỷ giá)' },
+                    { key: 'ir_score', label: 'IR (biến động lãi suất)' },
+                    { key: 'inf_score', label: 'INF (biến động lạm phát)' },
                     { key: 'tb_score', label: 'TB (cán cân thương mại XNK)' },
                     { key: 'pol_score', label: 'POL (rủi ro chính trị)' }
                 ];
@@ -686,7 +704,7 @@
                 const eventLines = marketEvents.map(ev => {
                     const date = ev.date || ev.Date || ev.DateTime || ev.datetime || '';
                     const text = ev.content || ev.Content || ev.event || ev.Event || ev.headline || ev.Headline || ev.description || ev.Description || '';
-                    return `${date}: ${text}`;
+                    return `${text}`;
                 });
 
                 brief.innerHTML = `
@@ -732,12 +750,12 @@
                     </div>
 
                     <div class="mb-4 pb-4 border-b border-slate-200">
-                        <div class="text-xs font-bold text-slate-600 uppercase tracking-widest mb-2.5">⚖️ Đánh giá chỉ số</div>
+                        <div class="text-xs font-bold text-slate-600 uppercase tracking-widest mb-2.5">⚖️ Chỉ số rủi ro tác động tỷ giá</div>
                         <ul class="space-y-1.5">${scoreLines.map(line => `<li class="text-xs text-slate-700">${line}</li>`).join('')}</ul>
                     </div>
 
                     <div>
-                        <div class="text-xs font-bold text-slate-600 uppercase tracking-widest mb-2.5">📅 Sự kiện (14 ngày gần đây)</div>
+                        <div class="text-xs font-bold text-slate-600 uppercase tracking-widest mb-2.5">📅 Nhận định</div>
                         <div class="space-y-1.5">
                             ${eventLines.length > 0 ? eventLines.map(line => `<div class="text-xs text-slate-700">${line}</div>`).join('') : '<div class="text-xs text-slate-400 italic">Không có sự kiện gần đây</div>'}
                         </div>
@@ -751,13 +769,30 @@
             const worldNews = document.getElementById('world-news');
             if (worldNews) {
                 worldNews.innerHTML = '';
-                (rawData.world_update || []).forEach(row => {
+                
+                // Sort by date (newest first) and limit to 365 rows
+                const newsItems = [...(rawData.world_update || [])]
+                    .sort((a, b) => {
+                        const dateA = new Date(a.date || a.Date);
+                        const dateB = new Date(b.date || b.Date);
+                        if (isNaN(dateA)) return 1;
+                        if (isNaN(dateB)) return -1;
+                        return dateB - dateA; // Descending
+                    })
+                    .slice(0, 365);
+
+                newsItems.forEach(row => {
                     const item = document.createElement('div');
-                    item.className = "pl-4 border-l-4 border-slate-300";
+                    item.className = "pl-4 border-l-4 border-slate-300 pb-2";
                     item.innerHTML = `
-                        <div class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">${row.theme || row.Theme} • ${row.date || row.Date}</div>
-                        <div class="text-base font-semibold text-slate-800 mb-2 leading-tight">${row.headline || row.Headline}</div>
-                        <div class="text-sm text-blue-800 bg-blue-50 p-3 rounded border border-blue-100 italic">${row.fx_implication || row.FX_Implication}</div>
+                        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 underline decoration-slate-200">
+                            ${row.theme || row.Theme || 'UNCLASSIFIED'} • ${row.date || row.Date || 'UNKNOWN'}
+                        </div>
+                        <div class="text-sm font-bold text-slate-800 mb-2 leading-tight">${row.headline || row.Headline || ''}</div>
+                        <div class="text-xs text-blue-800 bg-blue-50 p-2.5 rounded border border-blue-100 italic leading-snug">
+                            <span class="font-bold uppercase not-italic text-[9px] block mb-1">FX Implication:</span>
+                            ${row.fx_implication || row.FX_Implication || ''}
+                        </div>
                     `;
                     worldNews.appendChild(item);
                 });
