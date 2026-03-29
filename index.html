@@ -186,7 +186,7 @@
         <section class="card overflow-hidden">
             <div class="p-6 border-b border-slate-100 flex flex-col md:flex-row md:items-center gap-4 bg-slate-50">
                 <div class="flex items-center gap-4">
-                    <span class="text-sm font-bold text-slate-500 uppercase tracking-wide">So sánh:</span>
+                    <span class="text-sm font-bold text-slate-500 uppercase tracking-wide">So sánh dự báo:</span>
                     <div class="flex bg-slate-100 p-1 rounded-full border border-slate-200">
                         <button id="btn-vs-current"
                             class="px-5 py-1.5 text-sm font-semibold rounded-full bg-[#0ea5e9] text-white shadow-sm border border-transparent transition-all">So
@@ -707,44 +707,86 @@
                     return `${text}`;
                 });
 
+                // Strategic Metrics Grid
+                const s1m = forecasts.length >= 1 ? parseFloat(forecasts[0].spot_base).toFixed(2) : '-';
+                const s3m = forecasts.length >= 3 ? parseFloat(forecasts[2].spot_base).toFixed(2) : '-';
+                const s6m = forecasts.length >= 6 ? parseFloat(forecasts[5].spot_base).toFixed(2) : '-';
+                const s12m = forecasts.length >= 12 ? parseFloat(forecasts[11].spot_base).toFixed(2) : '-';
+
                 brief.innerHTML = `
-                    <div class="flex justify-between items-start mb-4 pb-4 border-b-2 border-slate-200">
+                    <div class="flex justify-between items-start mb-4 pb-3 border-b border-slate-200">
                         <div>
-                            <div class="text-2xl font-bold text-slate-900 tracking-wider">${mkt}</div>
-                            <div class="text-xs text-slate-500 uppercase tracking-widest mt-1">${countryName}</div>
+                            <div class="text-2xl font-black text-slate-900 tracking-tight uppercase">${mkt}</div>
+                            <div class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">${countryName}</div>
                         </div>
-                        <span class="risk-${trafficLight.toLowerCase()} shadow-md px-3 py-2 rounded-full font-bold text-xs">${trafficLight}</span>
+                        <span class="risk-${trafficLight.toLowerCase()} shadow-sm px-3 py-1.5 rounded-full font-bold text-[10px]">${trafficLight}</span>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-2 mb-3 pb-3 border-b border-slate-200">
-                        <div class="bg-slate-50 p-2 rounded-lg">
-                            <div class="text-xs text-slate-500 font-semibold uppercase tracking-wider mb-1">Tỷ giá hiện tại</div>
-                            <div class="text-lg font-bold text-slate-900">${currentSpot}</div>
-                            <div class="text-xs text-slate-400 mt-1">${currentDate}</div>
+                    <!-- Tỷ giá Section -->
+                    <div class="mb-4">
+                        <div class="text-[11px] font-black text-slate-800 uppercase tracking-widest mb-2 flex items-center gap-2">
+                             <div class="w-1 h-3 bg-blue-600"></div> Tỷ giá
                         </div>
-                        <div class="bg-slate-50 p-2 rounded-lg">
-                            <div class="text-xs text-slate-500 font-semibold uppercase tracking-wider mb-1">Cuối năm ${lastYear}</div>
-                            <div class="text-lg font-bold text-slate-900">${endYearSpot}</div>
-                            <div class="text-xs text-slate-400 mt-1">Tham chiếu</div>
-                        </div>
-                    </div>
-
-                    <div class="mb-3 pb-3 border-b border-slate-200">
-                        <div class="text-xs font-bold text-slate-800 uppercase tracking-widest mb-1"> Dự báo</div>
-                        <div class="text-[0.7rem] text-slate-700 leading-relaxed">
-                            <div class="flex flex-wrap items-center gap-x-3">
-                                <span>So với hiện tại:</span> 
-                                <span class="font-bold ${parseFloat(pct1m) > 0 ? 'text-red-600' : 'text-green-700'}">1M${formatDelta(pct1m)}</span>
-                                <span class="font-bold ${parseFloat(pct3m) > 0 ? 'text-red-600' : 'text-green-700'}">3M${formatDelta(pct3m)}</span>
-                                <span class="font-bold ${parseFloat(pct6m) > 0 ? 'text-red-600' : 'text-green-700'}">6M${formatDelta(pct6m)}</span>
-                                <span class="font-bold ${parseFloat(pct12m) > 0 ? 'text-red-600' : 'text-green-700'}">12M${formatDelta(pct12m)}</span>
+                        <div class="space-y-1 pl-3 border-l border-slate-100">
+                            <div class="flex justify-between text-xs">
+                                <span class="text-slate-500">Cuối năm trước:</span>
+                                <span class="font-bold text-slate-700">${endYearSpot}</span>
                             </div>
-                            <div class="flex flex-wrap items-center gap-x-3">
-                                <span>So với cuối năm trước :</span> 
-                                <span class="font-bold ${parseFloat(pct1mYoY) > 0 ? 'text-red-600' : 'text-green-700'}">1M${formatDelta(pct1mYoY)}</span>
-                                <span class="font-bold ${parseFloat(pct3mYoY) > 0 ? 'text-red-600' : 'text-green-700'}">3M${formatDelta(pct3mYoY)}</span>
-                                <span class="font-bold ${parseFloat(pct6mYoY) > 0 ? 'text-red-600' : 'text-green-700'}">6M${formatDelta(pct6mYoY)}</span>
-                                <span class="font-bold ${parseFloat(pct12mYoY) > 0 ? 'text-red-600' : 'text-green-700'}">12M${formatDelta(pct12mYoY)}</span>
+                            <div class="flex justify-between text-xs">
+                                <span class="text-slate-500">Hiện tại (${currentDate}):</span>
+                                <span class="font-bold text-slate-900">${currentSpot}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dự báo (tỷ giá) Section -->
+                    <div class="mb-4">
+                        <div class="text-[11px] font-black text-slate-800 uppercase tracking-widest mb-2 flex items-center gap-2">
+                             <div class="w-1 h-3 bg-blue-600"></div> Dự báo (tỷ giá)
+                        </div>
+                        <div class="grid grid-cols-2 gap-x-4 gap-y-1 pl-3 border-l border-slate-100">
+                            <div class="flex justify-between text-xs">
+                                <span class="text-slate-400 font-medium">1M:</span>
+                                <span class="font-bold text-slate-700">${s1m}</span>
+                            </div>
+                            <div class="flex justify-between text-xs">
+                                <span class="text-slate-400 font-medium">3M:</span>
+                                <span class="font-bold text-slate-700">${s3m}</span>
+                            </div>
+                            <div class="flex justify-between text-xs">
+                                <span class="text-slate-400 font-medium">6M:</span>
+                                <span class="font-bold text-slate-700">${s6m}</span>
+                            </div>
+                            <div class="flex justify-between text-xs">
+                                <span class="text-slate-400 font-medium">12M:</span>
+                                <span class="font-bold text-slate-700">${s12m}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- So sánh Section -->
+                    <div class="mb-4">
+                        <div class="text-[11px] font-black text-slate-800 uppercase tracking-widest mb-2 flex items-center gap-2">
+                             <div class="w-1 h-3 bg-blue-600"></div> So sánh dự báo
+                        </div>
+                        <div class="space-y-3 pl-3 border-l border-slate-100">
+                            <div>
+                                <div class="text-[10px] font-bold text-slate-400 uppercase mb-1">So với hiện tại:</div>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="text-[11px] font-bold px-1.5 py-0.5 rounded bg-slate-50 ${parseFloat(pct1m) > 0 ? 'text-red-600' : 'text-green-700'}">1M${formatDelta(pct1m)}</span>
+                                    <span class="text-[11px] font-bold px-1.5 py-0.5 rounded bg-slate-50 ${parseFloat(pct3m) > 0 ? 'text-red-600' : 'text-green-700'}">3M${formatDelta(pct3m)}</span>
+                                    <span class="text-[11px] font-bold px-1.5 py-0.5 rounded bg-slate-50 ${parseFloat(pct6m) > 0 ? 'text-red-600' : 'text-green-700'}">6M${formatDelta(pct6m)}</span>
+                                    <span class="text-[11px] font-bold px-1.5 py-0.5 rounded bg-slate-50 ${parseFloat(pct12m) > 0 ? 'text-red-600' : 'text-green-700'}">12M${formatDelta(pct12m)}</span>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="text-[10px] font-bold text-slate-400 uppercase mb-1">So với cuối năm trước:</div>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="text-[11px] font-bold px-1.5 py-0.5 rounded bg-slate-50 ${parseFloat(pct1mYoY) > 0 ? 'text-red-600' : 'text-green-700'}">1M${formatDelta(pct1mYoY)}</span>
+                                    <span class="text-[11px] font-bold px-1.5 py-0.5 rounded bg-slate-50 ${parseFloat(pct3mYoY) > 0 ? 'text-red-600' : 'text-green-700'}">3M${formatDelta(pct3mYoY)}</span>
+                                    <span class="text-[11px] font-bold px-1.5 py-0.5 rounded bg-slate-50 ${parseFloat(pct6mYoY) > 0 ? 'text-red-600' : 'text-green-700'}">6M${formatDelta(pct6mYoY)}</span>
+                                    <span class="text-[11px] font-bold px-1.5 py-0.5 rounded bg-slate-50 ${parseFloat(pct12mYoY) > 0 ? 'text-red-600' : 'text-green-700'}">12M${formatDelta(pct12mYoY)}</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -755,7 +797,7 @@
                     </div>
 
                     <div>
-                        <div class="text-xs font-bold text-slate-600 uppercase tracking-widest mb-2.5">📅 Nhận định</div>
+                        <div class="text-xs font-bold text-slate-600 uppercase tracking-widest mb-2.5">📅 Nhận định chuyên gia</div>
                         <div class="space-y-1.5">
                             ${eventLines.length > 0 ? eventLines.map(line => `<div class="text-xs text-slate-700">${line}</div>`).join('') : '<div class="text-xs text-slate-400 italic">Không có sự kiện gần đây</div>'}
                         </div>
@@ -769,7 +811,7 @@
             const worldNews = document.getElementById('world-news');
             if (worldNews) {
                 worldNews.innerHTML = '';
-                
+
                 // Sort by date (newest first) and limit to 365 rows
                 const newsItems = [...(rawData.world_update || [])]
                     .sort((a, b) => {
