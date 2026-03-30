@@ -458,14 +458,7 @@
             summaryBody.innerHTML = '';
             briefsContainer.innerHTML = '';
 
-            const now = new Date();
-            const cutoff = new Date(now);
-            cutoff.setDate(cutoff.getDate() - 2);
             const recentEvents = (rawData.events || [])
-                .filter(row => {
-                    const d = new Date(row.date || row.Date);
-                    return !isNaN(d) && d >= cutoff && d <= now;
-                })
                 .sort((a, b) => new Date(b.date || b.Date) - new Date(a.date || a.Date));
 
             // Build summary from Forecasts chart data (most recent Actual + Forecast rows)
