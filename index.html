@@ -458,7 +458,7 @@
             points.forEach((p, i) => {
                 const d = new Date(p.date || p.Date);
                 if (!isNaN(d) && vals[i] !== null) {
-                    const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+                    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
                     if (!(key in dateMap)) dateMap[key] = vals[i];
                 }
             });
@@ -478,7 +478,7 @@
                 const d = new Date(p.date || p.Date);
                 if (isNaN(d)) return null;
                 if (mode === 'yoy') {
-                    const key = `${d.getFullYear()-1}-${String(d.getMonth()+1).padStart(2,'00')}`;
+                    const key = `${d.getFullYear() - 1}-${String(d.getMonth() + 1).padStart(2, '00')}`;
                     const base = dateMap[key];
                     if (base == null || base === 0) return null;
                     return Number(((v / base - 1) * 100).toFixed(2));
@@ -500,7 +500,7 @@
 
         function setChartMode(chartId, mkt, mode) {
             chartModes[chartId] = mode;
-            ['abs','yoy','mom','ytd'].forEach(m => {
+            ['abs', 'yoy', 'mom', 'ytd'].forEach(m => {
                 const btn = document.getElementById(`${chartId}-btn-${m}`);
                 if (!btn) return;
                 if (m === mode) {
@@ -687,7 +687,7 @@
                 };
 
                 const scoreFields = [
-                    { key: 'vol_score', label: 'Vol (mức biến động tỷ giá)' },
+                    { key: 'vol_score', label: 'Vol (biến động tỷ giá)' },
                     { key: 'ir_score', label: 'IR (biến động lãi suất)' },
                     { key: 'inf_score', label: 'INF (biến động lạm phát)' },
                     { key: 'tb_score', label: 'TB (cán cân thương mại XNK)' },
@@ -713,7 +713,7 @@
                     if (x >= thresholds.high)
                         return '<span class="inline-flex items-center gap-1 text-red-600 text-xs font-bold">🔴 Rủi ro cao</span>';
                     if (x >= thresholds.medium)
-                        return '<span class="inline-flex items-center gap-1 text-yellow-600 text-xs font-bold">🟡 Bình thường</span>';
+                        return '<span class="inline-flex items-center gap-1 text-yellow-600 text-xs font-bold">🟡 Rủi ro trung bình</span>';
                     return '<span class="inline-flex items-center gap-1 text-green-700 text-xs font-bold">🟢 Rủi ro thấp</span>';
                 };
 
@@ -1188,7 +1188,7 @@
                 const sv = spotBase[i];
                 const d = new Date(p.date || p.Date);
                 if (!isNaN(d) && sv !== null) {
-                    const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+                    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
                     if (!(key in tooltipDateMap)) tooltipDateMap[key] = sv;
                     // last value per year
                     const yr = d.getFullYear();
@@ -1227,7 +1227,7 @@
                             if (spotBase[idx] == null) return null;
                             const d = new Date(date);
                             if (isNaN(d)) return null;
-                            const key = `${d.getFullYear()-1}-${String(d.getMonth()+1).padStart(2,'0')}`;
+                            const key = `${d.getFullYear() - 1}-${String(d.getMonth() + 1).padStart(2, '0')}`;
                             const base = tooltipDateMap[key];
                             if (base == null || base === 0) return null;
                             return ((spotBase[idx] / base - 1) * 100);
