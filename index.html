@@ -798,10 +798,10 @@
                         </div>
                     </div>
 
-                    <!-- Dự báo (tỷ giá) Section -->
+                    <!-- Dự báo Section -->
                     <div class="mb-4">
                         <div class="text-[11px] font-black text-slate-800 uppercase tracking-widest mb-2 flex items-center gap-2">
-                             <div class="w-1 h-3 bg-blue-600"></div> Dự báo (tỷ giá)
+                             <div class="w-1 h-3 bg-blue-600"></div> Dự báo
                         </div>
                         <div class="grid grid-cols-2 gap-x-4 gap-y-1 pl-3 border-l border-slate-100">
                             <div class="flex justify-between text-xs">
@@ -871,7 +871,7 @@
             if (worldNews) {
                 worldNews.innerHTML = '';
 
-                // Sort by date (newest first) and limit to 365 rows
+                // Sort by date (newest first) and limit to 30 rows
                 const newsItems = [...(rawData.world_update || [])]
                     .sort((a, b) => {
                         const dateA = new Date(a.date || a.Date);
@@ -880,7 +880,7 @@
                         if (isNaN(dateB)) return -1;
                         return dateB - dateA; // Descending
                     })
-                    .slice(0, 365);
+                    .slice(0, 30);
 
                 newsItems.forEach(row => {
                     const item = document.createElement('div');
