@@ -1099,7 +1099,7 @@
                     backgroundColor: 'rgba(255, 255, 255, 0.96)',
                     borderColor: '#e2e8f0', borderWidth: 1, textStyle: { color: '#0f172a' },
                     formatter: (params) => {
-                        let res = `<div style="font-weight:700;margin-bottom:8px;border-bottom:1px solid #f1f5f9;padding-bottom:5px;font-size:13px">${params[0].name} <span style="font-weight:500;color:#64748b">(so với ${mode === 'eoy' ? 'cuối năm trước' : 'hiện tại'})</span></div>`;
+                        let res = `<div style="font-weight:700;margin-bottom:8px;border-bottom:1px solid #f1f5f9;padding-bottom:5px;font-size:13px">${params[0].name} <span style="font-weight:500;color:#64748b">(so với ${mode === 'eoy' ? 'cuối năm trước (YTD)' : 'hiện tại'})</span></div>`;
                         params.forEach(p => {
                             const spotText = p.data && p.data.spot !== undefined ? p.data.spot : '-';
                             const valSign = p.value > 0 ? '+' : '';
